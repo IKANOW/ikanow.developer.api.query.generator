@@ -19,7 +19,7 @@ limitations under the License.
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-	<title>IKANOW API - Knowledge Get: Query Generator</title>
+	<title>IKANOW API - Query Generator<</title>
 	
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -86,10 +86,21 @@ limitations under the License.
 
 	<div class="form-signin">
       
-    	<h3 class="form-signin-heading">IKANOW API - Knowledge Get: Query Generator</h3>
+    	<h3 class="form-signin-heading">IKANOW API - Query Generator</h3>
     	
     	<div class="alert">
-  			<span class="label label-info">Instructions</span> 
+  			<span class="label label-info">Instructions</span>  The Query Generator demonstrates techniques
+  			for developers to use in interacting with the IKANOW Developer API while demonstrating how to formulate
+  			the JSON query object to send to the Knowledge - Document Query API. To use the Query Generator:
+  			<br><br>
+  			<ol>
+  				<li>Enter your API key and press the <strong>Get Communities</strong> button.</li>
+  				<li>Select the communities you want to search in and press the <strong>Get Sources</strong> button.</li>
+  				<li>Select the sources you want to search, search term, and search options then
+  					press the <strong>Get Query Object</strong> button.</li>
+  			</ol>
+  			
+  			
 		</div>
 		
 		<table width="100%" cellspacing="0" cellpadding="0">
@@ -102,17 +113,32 @@ limitations under the License.
 				<td><span class="label label-info">Communities:</span></td>
 				<td><select id="communitiesList" style="width: 500px;" multiple="multiple"></select></td>
 				<td><button class="btn" id="getSources">Get Sources</button></td>
-			</tr valign="top">
+			</tr>
 			<tr valign="top">
 				<td><span class="label label-info">Sources:</span></td>
 				<td colspan="2">
 					<select id="sourcesList" style="width: 500px;" multiple="multiple"></select>
 				</td>
-			</tr valign="top">
+			</tr>
 			<tr valign="top">
-				<td><span class="label label-info">Fragment:</span></td>
-				<td><input type="text" id="fragment" placeholder="Search fragment"></td>
-				<td><button class="btn" id="getEntities">Get Entity Suggestions</button></td>
+				<td></td>
+				<td>
+					<label class="checkbox">
+      					<input type="checkbox" id="excludeSelectedSources"> Exclude selected sources
+    				</label>
+				</td>
+				<td></td>
+			</tr>
+			<tr valign="top">
+				<td><span class="label label-info">Search Term/s:</span></td>
+				<td valign="middle">
+					<input type="text" id="queryText" style="width: 400px;" placeholder="Search Term/s">
+					<select id="searchMode" style="width: 100px;">
+  						<option>Free Text</option>
+  						<option>Exact Text</option>
+					</select>
+				</td>
+				<td><button class="btn" id="createQuery">Create Query</button></td>
 			</tr>
 			<tr valign="top">
 				<td><span class="label label-info">Post URL:</span></td>
@@ -122,11 +148,6 @@ limitations under the License.
 				</td>
 				<td><button class="btn" id="postQuery">Post Query</button></td>
 			</tr>
-			<!-- <tr>
-				<td colspan="3">
-					<h4>JSON Query Post Body</h4>
-				</td>
-			</tr> -->
 			<tr>
 				<td colspan="3">
 					<textarea id="queryJson" name="queryJson"></textarea>
@@ -152,22 +173,61 @@ limitations under the License.
 <!---------- JQuery Code ---------->
 <script>
 
+	var defaultPostUrl = "http://api.ikanow.com/api/knowledge/document/query/{communityIds}?infinite_api_key={apiKey}";
+	
 	var apiRoot = "http://api.ikanow.com/";
 	$(document).ready(function () {
+		$('#postUrl').val(defaultPostUrl);
+		
 		// Button click handlers
 		$("#getCommunities").click(function() { getCommunities(); });
-		$("#getEntities").click(function() { getEntities(); });
+		$("#getSources").click(function() { getSources(); });
+		$("#createQuery").click(function() { createQuery(); });
 	});
+	
 
-	function getEntities()
+	function createQuery()
 	{
+		var apiKey = $('#apiKey').val();
+		var communityList = $('select#communitiesList').val();
+		var sourceList = $('select#sourcesList').val();
+		var searchMode = $('#searchMode').val();
+		var queryText = $('#queryText').val();
+		
+		var url = $('#postUrl').val();
+		url = url.replace("{communityIds}", communityList);
+		url = url.replace("{apiKey}", apiKey);
+		$('#postUrl').val(url);
+		
+		// Create Query Object
+		var queryObject = new Object();
+
+		// Create queryObject.qt object
+		queryObject.qt = new Object();
+		if (searchMode == "Free Text") {
+			queryObject.qt.ftext = queryText;	
+		}
+		else {
+			queryObject.qt.etext = queryText;	
+		}
+		
+		// Create queryObject.input object if needed
+		// queryObject.input = new Object();
+		
+		testEditor.setValue(JSON.stringify(queryObject,null,'\t'));
+	}
+	
+	
+	function getSources()
+	{
+		$('#postUrl').val(defaultPostUrl);
 		var communityList = $('select#communitiesList').val();
 		
 		var apiKey = $('#apiKey').val();
 		if (apiKey.length > 0) {
-			var apiCall = apiRoot + "api/knowledge/feature/entitySuggest/" +
-				$("#fragment").val() + "/" + communityList + "?infinite_api_key=" + apiKey + "&geo=true&linkdata=true";
+			// API Call - Get list of good sources that are owned by the selected communities
 			
+			var apiCall = apiRoot + "api/config/source/good/" + communityList + "?infinite_api_key=" + apiKey;
 			var response = $.ajax({
 				type: 'GET',
 				url: 'get.jsp?addr=' + apiCall,
@@ -181,19 +241,28 @@ limitations under the License.
 	
 			if (jsonResponse.length > 0) {
 				var jsonObj = jQuery.parseJSON(jsonResponse);
-				testEditor.setValue(JSON.stringify(jsonObj,null,'\t'));
+				
+				//testEditor.setValue(JSON.stringify(jsonObj,null,'\t'));
+				
+				if (jsonObj.response.success == true) {
+					var sources = jsonObj.data;
+					var sourcesContainer = $('#sourcesList');
+					sourcesContainer.empty();
+					
+					for (var i=0; i < sources.length; i++) {
+						var source = sources[i];
+						$('#sourcesList').append($('<option>', { value: source.key, text : source.title }));
+					}
+				}
 			}
-		}
-		else {
-			
 		}
 	}
 	
 	
 	
-	
 	function getCommunities()
 	{
+		$('#postUrl').val(defaultPostUrl);
 		var apiKey = $('#apiKey').val();
 		if (apiKey.length > 0) {
 			// API Call - Person Get to return person object for user with API key passed in
@@ -211,7 +280,8 @@ limitations under the License.
 	
 			if (jsonResponse.length > 0) {
 				var jsonObj = jQuery.parseJSON(jsonResponse);
-				testEditor.setValue(JSON.stringify(jsonObj,null,'\t'));
+				
+				//testEditor.setValue(JSON.stringify(jsonObj,null,'\t'));
 				
 				if (jsonObj.response.success == true) {
 					var communities = jsonObj.data.communities;
@@ -223,12 +293,7 @@ limitations under the License.
 						$('#communitiesList').append($('<option>', { value: community._id, text : community.name }));
 					}
 				}
-				else {
-				}
 			}
-		}
-		else {
-			//$("#login-error").show();
 		}
 	}
 	
