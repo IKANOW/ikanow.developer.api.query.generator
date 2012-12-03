@@ -87,23 +87,27 @@ limitations under the License.
 	<div class="form-signin">
       
     	<h3 class="form-signin-heading">IKANOW API - Query Generator</h3>
-    	
+
     	<div class="alert">
-  			<span class="label label-info">Instructions</span>  The Query Generator demonstrates techniques
-  			for developers to use in interacting with the IKANOW Developer API while demonstrating how to formulate
-  			the JSON query object to send to the Knowledge - Document Query API. To use the Query Generator:
-  			<br><br>
+  			<p>The IKANOW API - Query Generator is an interactive tool useful for learning how to write query
+  			objects for the Document Query API (as well as demonstrating simple techniques for developing applications
+  			that interact with the <a href="http://developer.ikanow.com">IKANOW Developer API</a> 
+  			using JavaScript and JSP).</p> 
+  			
+			<span class="label label-info">Instructions</span>
   			<ol>
   				<li>Enter your API key and press the <strong>Get Communities</strong> button.</li>
   				<li>Select the communities you want to search in and press the <strong>Get Sources</strong> button.</li>
-  				<li>Select the sources you want to search, search term, and search options then
-  					press the <strong>Get Query Object</strong> button.</li>
+  				<li>Select the sources you want to search (Note: if you don't select a source all sources in the
+  					select list will be searched), search term, and search options then
+  					press the <strong>Create Query</strong> button.</li>
   			</ol>
-  			
-  			
 		</div>
 		
-		<table width="100%" cellspacing="0" cellpadding="0">
+		<table width="100%" cellspacing="0" cellpadding="8">
+			<tr valign="top" style="border-bottom-width: 1px; border-bottom-style:dotted; border-bottom-color:#DADADA;">
+				<td colspan="3"><h4>URL Arguments</h4></td>
+			</tr>
 			<tr valign="top">
 				<td width="15%"><span class="label label-info">API Key:</span></td>
 				<td width="60%"><input type="text" style="width: 300px;" id="apiKey" placeholder="API Key"></td>
@@ -114,23 +118,38 @@ limitations under the License.
 				<td><select id="communitiesList" style="width: 500px;" multiple="multiple"></select></td>
 				<td><button class="btn" id="getSources">Get Sources</button></td>
 			</tr>
+			<tr valign="top" style="border-bottom-width: 1px; border-bottom-style:dotted; border-bottom-color:#DADADA;">
+				<td colspan="3"><h4>Input Options</h4></td>
+			</tr>
 			<tr valign="top">
 				<td><span class="label label-info">Sources:</span></td>
+				<td valign="top">
+					<select id="sourcesList" style="width: 500px;" multiple="multiple"></select></td>
+				<td><input type="checkbox" id="excludeSelectedSources"> Exclude selected sources</td>
+			</tr>
+			<tr valign="top">
+				<td><span class="label label-info">Source Type:</span></td>
 				<td colspan="2">
-					<select id="sourcesList" style="width: 500px;" multiple="multiple"></select>
+					<select id="sourceType" style="width: 300px;">
+  						<option>Any</option>
+  						<option>Blog</option>
+  						<option>Database</option>
+  						<option>Other</option>
+					</select>	
 				</td>
 			</tr>
 			<tr valign="top">
-				<td></td>
+				<td><span class="label label-info">Source Tags:</span></td>
 				<td>
-					<label class="checkbox">
-      					<input type="checkbox" id="excludeSelectedSources"> Exclude selected sources
-    				</label>
+					<input type="text" id="queryTags" style="width: 400px;" placeholder="List of ',' separated tags">	
 				</td>
 				<td></td>
 			</tr>
+			<tr valign="top" style="border-bottom-width: 1px; border-bottom-style:dotted; border-bottom-color:#DADADA;">
+				<td colspan="3"><h4>Query Term/s</h4></td>
+			</tr>
 			<tr valign="top">
-				<td><span class="label label-info">Search Term/s:</span></td>
+				<td><span class="label label-info">Query Term/s:</span></td>
 				<td valign="middle">
 					<input type="text" id="queryText" style="width: 400px;" placeholder="Search Term/s">
 					<select id="searchMode" style="width: 100px;">
@@ -138,7 +157,58 @@ limitations under the License.
   						<option>Exact Text</option>
 					</select>
 				</td>
-				<td><button class="btn" id="createQuery">Create Query</button></td>
+				<td></td>
+			</tr>
+			<tr valign="top" style="border-bottom-width: 1px; border-bottom-style:dotted; border-bottom-color:#DADADA;">
+				<td colspan="3"><h4>Output Options</h4></td>
+			</tr>
+			<tr valign="top">
+				<td><span class="label label-info">Output Format:</span></td>
+				<td>
+					<select id="outputFormat" style="width: 250px;">
+  						<option>JSON</option>
+  						<option>XML</option>
+  						<option>RSS</option>
+					</select>
+				</td>
+				<td></td>
+			</tr>
+			<tr valign="top">
+				<td><span class="label label-info">Documents to Return:</span></td>
+				<td colspan="2">
+					<input type="text" id="numberOfDocs" style="width: 200px;" placeholder="Number Of Docs">
+					<input type="text" id="numberToSkip" style="width: 200px;" placeholder="Number To Skip">
+				</td>
+			</tr>
+			<tr valign="top">
+				<td><span class="label label-info">Include:</span></td>
+				<td colspan="2">
+					<input type="checkbox" id="includeEnts" checked> Entities &nbsp;&nbsp;
+					<input type="checkbox" id="includeEvents" checked> Events &nbsp;&nbsp;
+					<input type="checkbox" id="includeGeo" checked> Geo &nbsp;&nbsp;
+					<input type="checkbox" id="includeFacts" checked> Facts &nbsp;&nbsp;
+					<input type="checkbox" id="includeSummaries" checked> Summaries &nbsp;&nbsp;
+					<input type="checkbox" id="includeMetadata" checked> Metadata
+					
+				</td>
+			</tr>
+			
+			<tr valign="top">
+				<td><span class="label label-info">Filter:</span></td>
+				<td colspan="2">
+					<input type="text" id="entityTypes" style="width: 300px;" placeholder="List of ',' separated entity types">
+					<input type="text" id="verbCats" style="width: 300px;" placeholder="List of ',' separated verb categories">
+				</td>
+			</tr>
+
+			<tr valign="top" style="border-bottom-width: 1px; border-bottom-style:dotted; border-bottom-color:#DADADA;">
+				<td colspan="3"><h4>Scoring Options</h4></td>
+			</tr>
+
+
+			
+			<tr valign="top" style="border-bottom-width: 1px; border-bottom-style:dotted; border-bottom-color:#DADADA;">
+				<td colspan="3"><h4>Post URL and Body</h4></td>
 			</tr>
 			<tr valign="top">
 				<td><span class="label label-info">Post URL:</span></td>
@@ -146,16 +216,18 @@ limitations under the License.
 					<input type="text" style="width: 98%;" id="postUrl" 
 						value="http://api.ikanow.com/api/knowledge/document/query/{communityIds}?infinite_api_key={apiKey}" readonly>
 				</td>
-				<td><button class="btn" id="postQuery">Post Query</button></td>
+				<td>
+					<button class="btn" id="createQuery">Create Query</button>
+					<!-- <button class="btn" id="postQuery">Post Query</button> -->
+				</td>
 			</tr>
 			<tr>
-				<td colspan="3">
+				<td colspan="3">					
 					<textarea id="queryJson" name="queryJson"></textarea>
 				</td>
 			</tr>
 		</table>
 		
-
 </div> <!-- /container -->
 
 </body>
@@ -183,17 +255,22 @@ limitations under the License.
 		$("#getCommunities").click(function() { getCommunities(); });
 		$("#getSources").click(function() { getSources(); });
 		$("#createQuery").click(function() { createQuery(); });
+
 	});
-	
+
 
 	function createQuery()
 	{
 		var apiKey = $('#apiKey').val();
 		var communityList = $('select#communitiesList').val();
 		var sourceList = $('select#sourcesList').val();
+		var excludeSources = $("#excludeSelectedSources").is(':checked');
+		var sourceType = $('#sourceType').val();
+		var tags = $('#queryTags').val();
 		var searchMode = $('#searchMode').val();
 		var queryText = $('#queryText').val();
 		
+		// Create URL
 		var url = $('#postUrl').val();
 		url = url.replace("{communityIds}", communityList);
 		url = url.replace("{apiKey}", apiKey);
@@ -202,19 +279,106 @@ limitations under the License.
 		// Create Query Object
 		var queryObject = new Object();
 
-		// Create queryObject.qt object
-		queryObject.qt = new Object();
-		if (searchMode == "Free Text") {
-			queryObject.qt.ftext = queryText;	
-		}
-		else {
-			queryObject.qt.etext = queryText;	
+		// Start Create queryObject.qt object
+		queryObject.qt = new Array();
+		if (searchMode == "Free Text") { queryObject.qt[0] = {"ftext" : queryText}; }
+		else { queryObject.qt[0] = {"etext" : queryText}; }
+		// End Create queryObject.qt object
+		
+		
+		// Start Create queryObject.input
+		var sourceListArray = new Array();
+		if (sourceList != null && sourceList.length > 0) {
+			for (var i=0; i < sourceList.length; i++) {
+				var source = sourceList[i];
+				sourceListArray[i] = source;
+			}
 		}
 		
-		// Create queryObject.input object if needed
-		// queryObject.input = new Object();
+		if (sourceType == "Any") { sourceType = ""; }
+		if ( sourceListArray.length > 0 || tags.length > 0 || sourceType.length > 0 ) {
+			queryObject.input = new Object();
+			
+			if (sourceListArray.length > 0) { queryObject.input.sources = sourceListArray; }
+			if (excludeSources) queryObject.input.srcInclude = false;
+			
+			var tagArray = new Array();
+			if (tags.length > 0) { tagArray = tags.split(","); }
+			
+			if (sourceType.length > 0 && tagArray.length > 0) {
+				queryObject.input.typesAndTags = new Object();
+				queryObject.input.typesAndTags.type = sourceType;
+				queryObject.input.typesAndTags.tags = tagArray;
+			}
+			else if (sourceType.length > 0) {
+				queryObject.input.typesAndTags = new Object();
+				queryObject.input.typesAndTags.type = sourceType;
+			}
+			else if (tagArray.length > 0) {
+				queryObject.input.tags = tagArray;
+			}
+		}
+		// End Create queryObject.input
 		
+		
+		// Start Create queryObject.output
+		var outputFormat = $('#outputFormat').val();
+		var numberOfDocs = $('#numberOfDocs').val();
+		var numberToSkip = $('#numberToSkip').val();
+		var includeEnts = $("#includeEnts").is(':checked');
+		var includeEvents = $("#includeEvents").is(':checked');
+		var includeGeo = $("#includeGeo").is(':checked');
+		var includeFacts = $("#includeFacts").is(':checked');
+		var includeSummaries = $("#includeSummaries").is(':checked');
+		var includeMetadata = $("#includeMetadata").is(':checked');
+		var entityTypes = $('#entityTypes').val();
+		var verbCats = $('#verbCats').val();
+		
+		if (outputFormat != "JSON" || numberOfDocs.length > 0 || numberToSkip.length > 0 || 
+				includeEnts != true || includeEvents != true || includeGeo != true ||
+				includeFacts != true || includeSummaries != true || includeMetadata != true ||
+				entityTypes.length > 0 || verbCats.length > 0) {
+			
+			queryObject.output = new Object();
+			
+			if (outputFormat != "JSON") { queryObject.output.format = outputFormat; }
+			
+			if (numberOfDocs.length > 0 || numberToSkip.length > 0 || 
+					includeEnts != true || includeEvents != true || includeGeo != true ||
+					includeFacts != true || includeSummaries != true || includeMetadata != true ||
+					entityTypes.length > 0 || verbCats.length > 0) { queryObject.output.docs = new Object(); }
+			
+			if (numberOfDocs.length > 0 && isInt(numberOfDocs)) { queryObject.output.docs.numReturn = parseInt(numberOfDocs); }
+			if (numberToSkip.length > 0 && isInt(numberToSkip)) { queryObject.output.docs.skip = parseInt(numberToSkip); }
+			if (!includeEnts) { queryObject.output.docs.ents = false; }
+			if (!includeEvents) { queryObject.output.docs.events = false; }
+			if (!includeGeo) { queryObject.output.docs.geo = false; }
+			if (!includeFacts) { queryObject.output.docs.facts = false; }
+			if (!includeSummaries) { queryObject.output.docs.summaries = false; }
+			if (!includeMetadata) { queryObject.output.docs.metadata = false; }
+			
+			if (entityTypes.length > 0) {
+				queryObject.output.filter = new Object();
+				queryObject.output.filter.entityTypes = entityTypes.split(","); 
+			}
+			if (verbCats.length > 0) {
+				if (typeof queryObject.output.filter == 'undefined') { queryObject.output.filter = new Object(); }
+				queryObject.output.filter.assocVerbs = verbCats.split(","); 
+			}
+			
+			
+		}
+		
+		
+		// END Create queryObject.output
+		
+		
+		// Write queryObject to codemirror textbox
 		testEditor.setValue(JSON.stringify(queryObject,null,'\t'));
+	}
+	
+	function isInt(value) { 
+	    return !isNaN(parseInt(value)) && (parseFloat(value) == parseInt(value)); 
 	}
 	
 	
