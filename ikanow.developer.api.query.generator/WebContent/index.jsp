@@ -19,8 +19,8 @@ limitations under the License.
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-	<title>IKANOW API - Query Generator<</title>
-	
+	<title>IKANOW API - Query Generator</title>
+
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
@@ -100,13 +100,17 @@ limitations under the License.
   				<li>Select the communities you want to search in and press the <strong>Get Sources</strong> button.</li>
   				<li>Select the sources you want to search (Note: if you don't select a source all sources in the
   					select list will be searched), search term, and search options then
-  					press the <strong>Create Query</strong> button.</li>
+  					press the <strong>Create Query</strong> button. (Hint: Click on the <i class="icon-info-sign"></i> icon for
+  					a section to view the corresponding technical documentation for each object.)</li>
+  				<li>Copy the post URL and Body fields into your application, curl, or the Interactive API Documentation
+  					on the developer web site: <a href="http://developer.ikanow.com/io-docs">http://developer.ikanow.com/io-docs</a>.</li>
   			</ol>
 		</div>
 		
 		<table width="100%" cellspacing="0" cellpadding="8">
 			<tr valign="top" style="border-bottom-width: 1px; border-bottom-style:dotted; border-bottom-color:#DADADA;">
-				<td colspan="3"><h4>URL Arguments</h4></td>
+				<td colspan="3"><h4>URL Arguments <a href="http://developer.ikanow.com/docs/read/Querying_Documents"
+					target="blank"><i class="icon-info-sign"></i></a></h4> </td>
 			</tr>
 			<tr valign="top">
 				<td width="15%"><span class="label label-info">API Key:</span></td>
@@ -119,7 +123,8 @@ limitations under the License.
 				<td><button class="btn" id="getSources">Get Sources</button></td>
 			</tr>
 			<tr valign="top" style="border-bottom-width: 1px; border-bottom-style:dotted; border-bottom-color:#DADADA;">
-				<td colspan="3"><h4>Input Options</h4></td>
+				<td colspan="3"><h4>Input Options <a href="http://developer.ikanow.com/docs/read/Querying__Input_Options"
+					target="blank"><i class="icon-info-sign"></i></a></h4></td>
 			</tr>
 			<tr valign="top">
 				<td><span class="label label-info">Sources:</span></td>
@@ -146,7 +151,8 @@ limitations under the License.
 				<td></td>
 			</tr>
 			<tr valign="top" style="border-bottom-width: 1px; border-bottom-style:dotted; border-bottom-color:#DADADA;">
-				<td colspan="3"><h4>Query Term/s</h4></td>
+				<td colspan="3"><h4>Query Term/s <a href="http://developer.ikanow.com/docs/read/Querying__Query_Terms"
+					target="blank"><i class="icon-info-sign"></i></a></h4></td>
 			</tr>
 			<tr valign="top">
 				<td><span class="label label-info">Query Term/s:</span></td>
@@ -160,7 +166,8 @@ limitations under the License.
 				<td></td>
 			</tr>
 			<tr valign="top" style="border-bottom-width: 1px; border-bottom-style:dotted; border-bottom-color:#DADADA;">
-				<td colspan="3"><h4>Output Options</h4></td>
+				<td colspan="3"><h4>Output Options <a href="http://developer.ikanow.com/docs/read/Querying__Output_Options"
+					target="blank"><i class="icon-info-sign"></i></a></h4></td>
 			</tr>
 			<tr valign="top">
 				<td><span class="label label-info">Output Format:</span></td>
@@ -202,7 +209,36 @@ limitations under the License.
 			</tr>
 
 			<tr valign="top" style="border-bottom-width: 1px; border-bottom-style:dotted; border-bottom-color:#DADADA;">
-				<td colspan="3"><h4>Scoring Options</h4></td>
+				<td colspan="3"><h4>Scoring Options <a href="http://developer.ikanow.com/docs/read/Querying__Scoring_Params"
+					target="blank"><i class="icon-info-sign"></i></a></h4></td>
+			</tr>
+			
+			<tr valign="top">
+				<td><span class="label label-info">Number to Analyze:</span></td>
+				<td colspan="2">
+					<input type="text" id="numAnalyze" style="width: 150px;" placeholder="Number">
+				</td>
+			</tr>
+			<tr valign="top">
+				<td><span class="label label-info">Weighting:</span></td>
+				<td colspan="2">
+					<input type="text" id="sigWeight" style="width: 150px;" placeholder="Signifigance">
+					<input type="text" id="relWeight" style="width: 150px;" placeholder="Relevance">
+				</td>
+			</tr>
+			<tr valign="top">
+				<td><span class="label label-info">Time Proximity:</span></td>
+				<td colspan="2">
+					<input type="text" id="timeProx" style="width: 225px;" placeholder="Time">
+					<input type="text" id="timeDecay" style="width: 75px;" placeholder="Decay">
+				</td>
+			</tr>
+			<tr valign="top">
+				<td><span class="label label-info">Geospatial Proximity:</span></td>
+				<td colspan="2">
+					<input type="text" id="latLon" style="width: 200px;" placeholder="Latitude,Longitude">
+					<input type="text" id="latLonDecay" style="width: 100px;" placeholder="Decay">
+				</td>
 			</tr>
 
 
@@ -365,12 +401,40 @@ limitations under the License.
 				if (typeof queryObject.output.filter == 'undefined') { queryObject.output.filter = new Object(); }
 				queryObject.output.filter.assocVerbs = verbCats.split(","); 
 			}
-			
-			
+			// End Create queryObject.output
 		}
-		
-		
 		// END Create queryObject.output
+		
+		// Start create queryObject.score
+		var numAnalyze = $('#numAnalyze').val();
+		var sigWeight = $('#sigWeight').val();
+		var relWeight = $('#relWeight').val();
+		var timeProx = $('#timeProx').val();
+		var timeDecay = $('#timeDecay').val();
+		var latLon = $('#latLon').val();
+		var latLonDecay = $('#latLonDecay').val();
+		
+		if (numAnalyze.length > 0 || sigWeight.length > 0 || relWeight.length > 0 || timeProx.length > 0 ||
+				timeDecay.length > 0 || latLon.length > 0 || latLonDecay.length > 0) {
+			
+			queryObject.score = new Object();
+				
+			if (numAnalyze.length > 0 && isInt(numAnalyze)) { queryObject.score.numAnalyze = parseInt(numAnalyze); }
+			if (sigWeight.length > 0  && !isNaN(sigWeight)) { queryObject.score.sigWeight = parseFloat(sigWeight); }
+			if (relWeight.length > 0  && !isNaN(relWeight)) { queryObject.score.relWeight = parseFloat(relWeight); }
+			if (timeProx.length > 0) {
+				queryObject.score.timeProx = new Object();
+				queryObject.score.timeProx.time = timeProx;
+				if (timeDecay.length > 0) { queryObject.score.timeProx.duration = timeDecay; }
+			}
+			if (latLon.length > 0) {
+				queryObject.score.geoProx = new Object();
+				queryObject.score.geoProx.ll = latLon;
+				if (latLonDecay.length > 0) { queryObject.score.geoProx.decay = latLonDecay; }
+			}
+				
+		}
+		// End create queryObject.score
 		
 		
 		// Write queryObject to codemirror textbox
